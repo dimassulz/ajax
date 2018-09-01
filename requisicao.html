@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,30 +8,88 @@
     <title>Requisição</title>
     <script src="jquery.js"></script>
     <script>
-        $(function(){
-            
+        $(function () {
+            //Ajax consultando texto
             $.ajax({
                 url: 'texto.txt',
-                success:function(response){
+                success: function (response) {
                     //console.log(response);
                     //alert('encontrou!!!!');
                     //Inserindo o conteudo do response após a tag <h1>
-                    $('h1').after('<h2>'+response+'</h2>');
-                }, 
-                error:function(){
+                    $('h1').after('<h2>' + response + '</h2>');
+                },
+                error: function () {
+                    alert('Ocorreu um erro!!!');
+                }
+            });
+            //ajax consulta html
+            $.ajax({
+                url: 'texto.html',
+                success: function (response) {
+                    //console.log(response);
+                    //alert('encontrou!!!!');
+                    //Inserindo o conteudo do response após a tag <h1>
+                    $('h1').after(response);
+                },
+                error: function () {
+                    alert('Ocorreu um erro!!!');
+                }
+            });
+            //ajax consulta json
+            $.ajax({
+                url: 'texto.json',
+                success: function (response) {
+                    //response é um array JSON com objetos
+                    //$.each vai iterar esse array
+                    $.each(response, function (indice, obj) {
+                        $('#listaUsuarios').append('<li>' + obj.nome + '</li>');
+                    });
+                    //alert('encontrou!!!!');
+                    //Inserindo o conteudo do response após a tag <h1>
+                    $('h1').after(response);
+                },
+                error: function () {
                     alert('Ocorreu um erro!!!');
                 }
             });
 
+            //blur quando clica fora do campo
+            $('#cep').blur(function () {
+                $.ajax({
+                    url: 'https://viacep.com.br/ws/'+$(this).val()+'/json/',
+                    success: function (response) {
+                        $('#endereco').html(response.logradouro + ' ' + response.complemento + ' ' + response.bairro + ' ' + response.localidade + ' ' + response.uf);
+                    },
+                    error: function () {
+                        alert('Não foi possivel obter conexão com o servidor!');
+                    }
+                });
+            });
+
+
         });
     </script>
 </head>
+
 <body>
     <h1>Ajax - Asynchronous JavaScript and XML</h1>
     <p>
-        Técnica de desenvolvimento web que permite a criação de aplicações mais interativas. Tornar páginas web mais rápidas pela troca de pequenas quantidades de informação.</p>
+        Técnica de desenvolvimento web que permite a criação de aplicações mais interativas. Tornar páginas web mais rápidas pela
+        troca de pequenas quantidades de informação.</p>
     <p> Evita que uma página inteira seja recarregada cada vez que alguma nova informação precisa ser consultada no servidor.
     </p>
-    
+
+    <div>
+        <h2>Lista de usuarios</h2>
+        <ul id="listaUsuarios">
+
+        </ul>
+        <h2>Endereço Via Cep</h2>
+        <input type="text" name="cep" id="cep" maxlength="8" placeholder="Digite um CEP para consultar">
+        <br>
+        <span id="endereco"></span>
+    </div>
+
 </body>
+
 </html>
