@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Carregando Estado e Municipio</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(function () {
+            //Ao iniciar a página carregar o servico do IBGE via AJAX
+            $.ajax({
+                url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados",
+                method: "GET",
+                success: function (resp) {
+                    $.each(resp, function (indice, valor) {
+                        $('#estado').append('<option value="' + valor.id + '">' + valor.nome + ' </option>');
+                    });
+                },
+                error: function () {
+                    alert('Ocorreu um erro ao carregar o serviço [ESTADO]');
+                }
+            });
+            //Precisamos criar um evento de change para o select do estado
+            $('#estado').on('change', function () {
+                $.ajax({
+                    url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados/"+$(this).val()+"/municipios",
+                    method: "GET",
+                    //Acontece durante o carregamento da url
+                    beforeSend : function(){
+                        $('#municipio').html('<option value=""> CARREGANDO... </option>');
+                    },
+                    success: function (resp) {
+                         //Limpar o municipio
+                         $('#municipio').html('<option value=""> - SELECIONE - </option>');
+
+                        $.each(resp, function (indice, valor) {
+                            $('#municipio').append('<option value="' + valor.id + '">' + valor.nome + ' </option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Ocorreu um erro ao carregar o serviço [MUNICIPIO]');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Carregando estado municipio</h1>
+    Estado:
+    <br>
+    <select name="estado" id="estado">
+        <option value=""> - SELECIONE - </option>
+    </select>
+    <br> Município:
+    <br>
+    <select name="municipio" id="municipio">
+        <option value=""> - SELECIONE - </option>
+    </select>
+
+</body>
+
+</html>

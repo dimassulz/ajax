@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Carregando Região, Estado e Municipio</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(function () {
+            function carregarRegioes() {
+                $.ajax({
+                    url: "https://servicodados.ibge.gov.br/api/v1/localidades/regioes",
+                    method: "GET",
+                    success: function (resp) {
+                        $.each(resp, function (indice, valor) {
+                            $('#regiao').append('<option value="' + valor.id + '">' + valor.nome + ' </option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Ocorreu um erro ao carregar o serviço [REGIAO]');
+                    }
+                });
+            };
+
+            function carregarEstados(idRegiao) {
+                $.ajax({
+                    url: "https://servicodados.ibge.gov.br/api/v1/localidades/regioes/" + idRegiao + "/estados",
+                    method: "GET",
+                    beforeSend: function () {
+                        $('#estado').html('<option value=""> CARREGANDO... </option>');
+                        $('#municipio').html('<option value=""> CARREGANDO... </option>');
+                    },
+                    success: function (resp) {
+                        $('#estado').html('<option value=""> - SELECIONE - </option>');
+                        $('#municipio').html('<option value=""> - SELECIONE - </option>');
+                        $.each(resp, function (indice, valor) {
+                            $('#estado').append('<option value="' + valor.id + '">' + valor.nome + ' </option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Ocorreu um erro ao carregar o serviço [ESTADO]');
+                    }
+                });
+            };
+
+            function carregarMunicipios(idEstado) {
+                $.ajax({
+                    url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados/" + idEstado + "/municipios",
+                    method: "GET",
+                    //Acontece durante o carregamento da url
+                    beforeSend: function () {
+                        $('#municipio').html('<option value=""> CARREGANDO... </option>');
+                    },
+                    success: function (resp) {
+                        //Limpar o municipio
+                        $('#municipio').html('<option value=""> - SELECIONE - </option>');
+
+                        $.each(resp, function (indice, valor) {
+                            $('#municipio').append('<option value="' + valor.id + '">' + valor.nome + ' </option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Ocorreu um erro ao carregar o serviço [MUNICIPIO]');
+                    }
+                });
+            };
+            
+            //apresenta as regioes
+            carregarRegioes();
+            
+            //adiciona o evento de change para a regiao
+            $('#regiao').on('change', function () {
+                let idRegiao = $(this).val();
+                carregarEstados(idRegiao);
+            });
+            //adiciona o evento de change para o estado
+            $('#estado').on('change', function () {
+                let idEstado = $(this).val();
+                carregarMunicipios(idEstado);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Carregando região, estado e municipio</h1>
+    Região:
+    <br>
+    <select name="regiao" id="regiao">
+        <option value=""> - SELECIONE - </option>
+    </select>
+    <br> Estado:
+    <br>
+    <select name="estado" id="estado">
+        <option value=""> - SELECIONE - </option>
+    </select>
+    <br> Município:
+    <br>
+    <select name="municipio" id="municipio">
+        <option value=""> - SELECIONE - </option>
+    </select>
+
+</body>
+
+</html>
