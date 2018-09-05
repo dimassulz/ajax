@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Página</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(function(){
+            function carregaPaginas(nomeDaPagina){
+                $.ajax({
+                    url:'view/'+nomeDaPagina+'.html',
+                    success:function(pag){
+                        $('#view').html(pag);
+                    }
+                });
+            }
+            $('#home').on('click',function(){
+                carregaPaginas('home');
+            });
+            $('#servicos').on('click',function(){
+                carregaPaginas('servicos');
+            });
+            $('#sobre').on('click',function(){
+                carregaPaginas('sobre');
+            });
+            $('#contato').on('click',function(){
+                carregaPaginas('contato');
+            });
+        });
+    </script>
+</head>
+<body>
+    <ul>
+        <li><a id="home" href="#">Home</a></li>
+        <li><a id="servicos" href="#">Servicos</a></li>
+        <li><a id="sobre" href="#">Sobre</a></li>
+        <li><a id="contato" href="#">Contato</a></li>
+    </ul>
+    <hr>
+    <div id="view"></div>  
+</body>
+</html>
